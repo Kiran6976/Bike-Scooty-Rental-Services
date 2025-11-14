@@ -120,7 +120,7 @@ const Rentbikecart = () => {
                 {items.map((items) => 
                     <div className = "salecartLidiv"  key={items._id}>
                             <ul>
-                                <li style={{wordSpacing: "10px"}}>Brand: {items.brand} --- Model: {items.model} --- Hours: {items.requiredhours} --- RentPerHour: {items.rentperhour}Taka --- TotalBill: {items.totalbill}Taka   <button className="btn"><i className="fa fa-trash"></i></button></li>
+                                <li style={{wordSpacing: "10px"}}>Brand: {items.brand} --- Model: {items.model} --- Hours: {items.requiredhours} --- RentPerHour: {items.rentperhour}Rupees --- TotalBill: {items.totalbill}Rupees   <button className="btn"><i className="fa fa-trash"></i></button></li>
                             </ul> 
                         </div>
                      

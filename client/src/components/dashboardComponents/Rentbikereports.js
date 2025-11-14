@@ -140,9 +140,9 @@ const Rentbikereports = () => {
                 <tr>
                   <td >{allsoldItems.brand}</td>
                   <td >{allsoldItems.model}</td>
-                  <td >{allsoldItems.retailPricePerItem} Taka</td>
+                  <td >{allsoldItems.retailPricePerItem} ₹</td>
                   <td >{allsoldItems.bookedHours}</td>
-                  <td >{allsoldItems.totalIncome} Taka</td>
+                  <td >{allsoldItems.totalIncome} ₹</td>
                 </tr> 
             </tbody>
          

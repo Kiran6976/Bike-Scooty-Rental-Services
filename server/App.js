@@ -13,6 +13,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(require('./router/auth'));
+
 app.use("/uploads",express.static('uploads'));
 
 

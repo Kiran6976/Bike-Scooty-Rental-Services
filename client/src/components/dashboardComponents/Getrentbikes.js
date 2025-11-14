@@ -141,7 +141,7 @@ let bikeIdFromDashBoard;
                     <td >{getBikes.brand}</td>
                     <td >{getBikes.model}</td>
                     <td >{getBikes.rent}</td>
-                    <td >{getBikes.price} Taka</td>
+                    <td >{getBikes.price} Rupees</td>
                     <td >{getBikes.availability} hours</td>
                     <td ><button id = {getBikes._id} onClick={deleteUser} className="btn"><i className="fa fa-trash"></i></button></td>
                 </tr> 
