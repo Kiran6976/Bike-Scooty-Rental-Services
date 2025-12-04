@@ -13,5 +13,5 @@ and then you need to install some more modules like: "npm install dotenv" ,  "np
 and then after successfully installing these modules you can run the server by "nodemon server.js" command. 
 
 ***to access the admin panel :
-********User Name: Bike Book
-********Password : 1234
+********User Name: KiranAdmin
+********Password : admin123

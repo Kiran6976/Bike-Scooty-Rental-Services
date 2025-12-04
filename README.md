@@ -89,40 +89,40 @@ We will be using basic CSS and its framework Bootstrap 4, which provides various
 # SCREEENSHOTS
 
 ## Homepage
-<img src="Screenshots/screencapture-localhost-3000-2022-12-31-22_18_02.png">
+<img src="Screenshots/Home.png">
 
 ## User Login Page
-<img src="Screenshots/screencapture-localhost-3000-signin-2022-12-31-22_22_47.png">
+<img src="Screenshots/UserLogin.png">
 
 ## User Signup Page
-<img src="Screenshots/screencapture-localhost-3000-signup-2022-12-31-22_21_12.png">
+<img src="Screenshots/UserSignUp.png">
 
 ## Admin Signin
-<img src="Screenshots/screencapture-localhost-3000-adminsignin-2022-12-31-22_32_10.png">
+<img src="Screenshots/AdminSignIn.png">
 
 ## Explore Bikes
-<img src="Screenshots/screencapture-localhost-3000-exploreRentBikes-2022-12-31-22_18_55.png">
+<img src="Screenshots/ExploreBikes.png">
 
 ## Rent Bikes
-<img src="Screenshots/screencapture-localhost-3000-rentbike-2022-12-31-22_25_41.png">
+<img src="Screenshots/RentBikes.png">
 
 ## Cart
-<img src="Screenshots/screencapture-localhost-3000-rentbikecart-2022-12-31-22_27_31.png">
+<img src="Screenshots/AddToCart.png">
 
 ## Review
-<img src="Screenshots/screencapture-localhost-3000-rentbikereviews-2022-12-31-22_31_32.png">
+<img src="Screenshots/Review.png">
 
 ## Admin Dashboard
-<img src="Screenshots/screencapture-localhost-3000-Dashboard-2022-12-31-22_32_45.png">
+<img src="Screenshots/AdminDashboard.png">
 
 ## Add Bikes
-<img src="Screenshots/screencapture-localhost-3000-addbikes-2022-12-31-22_33_14.png">
+<img src="Screenshots/AddBikes.png">
 
 ## Available Bikes for rent
-<img src="Screenshots/screencapture-localhost-3000-getrentbikesforadmin-2022-12-31-22_34_16.png">
+<img src="Screenshots/AvailableBikes.png">
 
-## Icome Statements
-<img src="Screenshots/screencapture-localhost-3000-rentbikesreports-2022-12-31-22_34_29.png">
+## Income Statements
+<img src="Screenshots/Income.png">
 
 ## Available Users
-<img src="Screenshots/screencapture-localhost-3000-availableusers-2022-12-31-22_34_39.png">
+<img src="Screenshots/Users.png">
