@@ -1,25 +1,63 @@
-const dotenv = require('dotenv');
-const mongoose = require('mongoose');
-const express = require('express');
-const app = express();
+const dotenv = require("dotenv");
+const mongoose = require("mongoose");
+const express = require("express");
+const path = require("path");
 const cookieParser = require("cookie-parser");
-const cors = require('cors');
+const cors = require("cors");
 
-dotenv.config({ path: './config.env' });
+const app = express();
 
-require('./database/conn'); 
+/* ======================
+   ENV CONFIG
+====================== */
+dotenv.config({ path: "./config.env" });
 
+/* ======================
+   DATABASE
+====================== */
+require("./database/conn");
+
+/* ======================
+   MIDDLEWARE
+====================== */
 app.use(express.json());
 app.use(cookieParser());
 
-app.use(require('./router/auth'));
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
 
-app.use("/uploads",express.static('uploads'));
+/* ======================
+   ROUTES
+====================== */
+app.use(require("./router/auth"));
 
+/* ======================
+   STATIC FILES
+====================== */
+app.use("/uploads", express.static("uploads"));
 
+/* ======================
+   PRODUCTION BUILD
+====================== */
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../client/build")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(
+      path.resolve(__dirname, "../client/build", "index.html")
+    );
+  });
+}
+
+/* ======================
+   SERVER
+====================== */
 const PORT = process.env.PORT || 5000;
 
-
-app.listen(PORT, ()=>{
-    console.log(`server is running on port ${PORT}`);
-})
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
