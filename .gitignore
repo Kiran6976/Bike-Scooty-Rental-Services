@@ -1,1 +1,23 @@
-node_modules
+# Root node modules
+node_modules/
+
+# Server
+server/node_modules/
+server/config.env
+server/.env
+
+# Client
+client/node_modules/
+client/build
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Logs
+npm-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
