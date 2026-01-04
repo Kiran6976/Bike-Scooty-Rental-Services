@@ -10,7 +10,8 @@ const app = express();
 /* ======================
    ENV CONFIG
 ====================== */
-dotenv.config();
+dotenv.config({ path: './config.env' });
+
 
 /* ======================
    DATABASE
