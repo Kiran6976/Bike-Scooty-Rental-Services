@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from 'react'
 import { NavLink, useHistory } from "react-router-dom";
-import Stripe from "react-stripe-checkout";
+
 
 import { UserContext } from "../App"
 
@@ -95,7 +95,70 @@ const Rentbikecart = () => {
         }
     }
 
-  
+  let rentCartItemId;
+
+const deleteRentItem = (e) => {
+  rentCartItemId = e.target.id;
+
+  return fetch("/deleteRentCartItem", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      rentCartItemId
+    })
+  })
+  .then(() => {
+    // update UI after delete
+    setItems(items.filter(item => item._id !== rentCartItemId));
+  })
+  .catch(err => console.log(err));
+};
+
+const loadRazorpay = async () => {
+  const res = await fetch("/create-razorpay-order", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ amount: itemsPrice }),
+  });
+
+  const order = await res.json();
+
+  const options = {
+    key: "rzp_test_xxxxx", // frontend key only
+    amount: order.amount,
+    currency: "INR",
+    name: "BikeBook",
+    description: "Bike Rental Payment",
+    order_id: order.id,
+
+    handler: async function (response) {
+      const verifyRes = await fetch("/verify-razorpay", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(response),
+      });
+
+      const verifyData = await verifyRes.json();
+
+      if (verifyData.success) {
+        alert("Payment Successful!");
+        updateDataBase(); // clear cart / mark paid
+      } else {
+        alert("Payment Verification Failed");
+      }
+    },
+
+    theme: {
+      color: "#ff6a00",
+    },
+  };
+
+  const rzp = new window.Razorpay(options);
+  rzp.open();
+};
+
 
     return (
         <>
@@ -120,17 +183,15 @@ const Rentbikecart = () => {
                 {items.map((items) => 
                     <div className = "salecartLidiv"  key={items._id}>
                             <ul>
-                                <li style={{wordSpacing: "10px"}}>Brand: {items.brand} --- Model: {items.model} --- Hours: {items.requiredhours} --- RentPerHour: {items.rentperhour}Rupees --- TotalBill: {items.totalbill}Rupees   <button className="btn"><i className="fa fa-trash"></i></button></li>
+                                <li style={{wordSpacing: "10px"}}>Brand: {items.brand} --- Model: {items.model} --- Hours: {items.requiredhours} --- RentPerHour: {items.rentperhour}Rupees --- TotalBill: {items.totalbill}Rupees   <button id={items._id} onClick={deleteRentItem} className="btn"><i className="fa fa-trash"></i></button></li>
                             </ul> 
                         </div>
                      
             )}
                         <div style={{padding: "30px",  textAlign:"center"}}>
                             <h2>Pay Through Credit / Debit Biked</h2><br/>
-                            <Stripe 
-                                stripeKey = "pk_test_51Jyb5UBvc4Qazj8jy6qimLop4epxe5jziUD3ixj5ISycjjD6yYVGZhk688Pz9Lna32VTHbSHxRwkrvNNnnnr96P000M68u5jcd"
-                                token = {tokenHandler}
-                            />
+                            
+                            <button className="btn" onClick={loadRazorpay}>Pay Now</button>
                         </div>               
             </div>
             </div>

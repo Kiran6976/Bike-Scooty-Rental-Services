@@ -1,11 +1,12 @@
+
 import React, {useState, useEffect, useContext} from 'react'
 import { NavLink } from "react-router-dom";
-
 import { UserContext } from "../App"
 
 const Home = () => {
     const [userData, setUserData] = useState({name:"", email:"", phone:"", message:""});
-    
+    const [userInitial, setUserInitial] = useState("U");
+
 
     
     const {state, dispatch} = useContext(UserContext)
@@ -24,6 +25,7 @@ const Home = () => {
             const data = await res.json();
             
             setUserData({...userData, name:data.name, email:data.email, phone:data.phone});
+            setUserInitial(data.name ? data.name.charAt(0).toUpperCase() : "U");
 
 
             if(!res.status === 200){
@@ -75,21 +77,35 @@ const Home = () => {
 
     
     
-    const Loginbutton= () =>{
-        
-        if(state){
-            return <div> 
-                <button ><NavLink className="btn" to="/signout">logout</NavLink></button>      
-            </div>
-        }
-        else{
-            return <div>  
-                    <button ><NavLink className="btn" to="/signin">login</NavLink></button>
-                    
-                </div>
-        }
-    
-    }
+    const Loginbutton = () => {
+  const [open, setOpen] = React.useState(false);
+
+  if (state) {
+    return (
+      <div
+        className="user-avatar"
+        onClick={() => setOpen(!open)}
+      >
+        {userInitial}
+
+
+        <div className={`avatar-menu ${open ? "active" : ""}`}>
+          <NavLink to="/profile">My Profile</NavLink>
+          <NavLink to="/signout">Logout</NavLink>
+        </div>
+      </div>
+    );
+  } else {
+    return (
+      <button>
+        <NavLink className="btn" to="/signin">
+          Login
+        </NavLink>
+      </button>
+    );
+  }
+};
+
 
 
     return (
@@ -123,7 +139,7 @@ const Home = () => {
 
 <section className="home" id="home">
 
-<h3 data-speed="-2" className="home-parallax">Rent a Bike</h3>
+<h3 data-speed="-2" className="home-parallax fw-bolder">Rent a Bike</h3>
 
 <img data-speed="5" className="home-parallax" src="/image/home.png" alt=""/>
 

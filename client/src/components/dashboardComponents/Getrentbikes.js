@@ -27,21 +27,33 @@ const Getrentbikes = () => {
 useEffect(() => {
     getallrenttbikes();
 }, [])
-
-let bikeIdFromDashBoard;
-  const deleteUser = (e) =>{
-    bikeIdFromDashBoard = e.target.id;
-
-    return fetch("/deleteRentBikeFromDashboard", {
+const deleteBike = async (bikeId) => {
+  try {
+    const res = await fetch("/deleteRentBikeFromDashboard", {
       method: "POST",
-      headers:{
-          "Content-Type" : "application/json"
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        bikeIdFromDashBoard
-      })
-  })
+        bikeIdFromDashBoard: bikeId,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      // update UI instantly
+      setGetBikes((prev) =>
+        prev.filter((bike) => bike._id !== bikeId)
+      );
+    }
+  } catch (error) {
+    console.log(error);
   }
+};
+
+
 
 
   const Loginbutton= () =>{
@@ -143,7 +155,7 @@ let bikeIdFromDashBoard;
                     <td >{getBikes.rent}</td>
                     <td >{getBikes.price} Rupees</td>
                     <td >{getBikes.availability} hours</td>
-                    <td ><button id = {getBikes._id} onClick={deleteUser} className="btn"><i className="fa fa-trash"></i></button></td>
+                    <td ><button className= "btn delete-btn" onClick={() => deleteBike(getBikes._id)}><i className="fa fa-trash"></i></button></td>
                 </tr> 
             </tbody>
          

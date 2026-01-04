@@ -26,6 +26,11 @@ router.use(require('../clientSideModules/addtocartforrentbikes'))
 router.use(require('../clientSideModules/displayrentcartdata'))
 router.use(require('../clientSideModules/paymentmethoderentbikes'))
 router.use(require('../clientSideModules/updatedbafetrrentedbike'))
+router.use(require('../clientSideModules/myprofile'));
+router.use(require('../clientSideModules/changepassword'));
+router.use(require("../clientSideModules/deleteRentCartItem"));
+router.use(require('../clientSideModules/razorpayOrder'));
+router.use(require('../clientSideModules/verifyRazorpay'));
 
 
 
@@ -41,6 +46,8 @@ router.use(require('../adminSideModules/getadmindata'))
 router.use(require('../adminSideModules/addrentbikes'))
 router.use(require('../adminSideModules/getallrentbikes'))
 router.use(require('../adminSideModules/incomeforrentbikes'))
+router.use(require("../adminSideModules/deleterentbikes"));
+
 
 // Admin Side Modules---for--- Users
 router.use(require('../adminSideModules/deleteuser'))

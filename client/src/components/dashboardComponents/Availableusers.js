@@ -28,19 +28,29 @@ useEffect(() => {
   getallusers();
 }, [])
 
-let userIdFromDashBoard;
-  const deleteUser = (e) =>{
-    userIdFromDashBoard = e.target.id;
-    return fetch("/deleteUserfromdashboard", {
+const deleteUser = async (userId) => {
+  try {
+    const res = await fetch("/deleteUserfromdashboard", {
       method: "POST",
-      headers:{
-          "Content-Type" : "application/json"
+      headers: {
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        userIdFromDashBoard
-      })
-  })
+        userIdFromDashBoard: userId,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      // remove user from UI instantly
+      setGetUsers((prev) => prev.filter((u) => u._id !== userId));
+    }
+  } catch (error) {
+    console.log(error);
   }
+};
+
 
 
   const Loginbutton= () =>{
@@ -143,7 +153,7 @@ let userIdFromDashBoard;
                   <td >{getUsers.name}</td>
                   <td >{getUsers.email}</td>
                   <td >{getUsers.phone}</td>
-                  <td ><button id = {getUsers._id} onClick={deleteUser} className="btn"><i className="fa fa-trash"></i></button></td>
+                  <td ><button className = "btn" onClick={() => deleteUser(getUsers._id )}><i className="fa fa-trash"></i></button></td>
                    
                 </tr> 
             </tbody>

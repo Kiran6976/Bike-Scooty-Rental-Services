@@ -1,88 +1,209 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { NavLink, useHistory } from "react-router-dom";
+import { UserContext } from "../App";
 
-export default function Profile() {
-  const isLoggedIn = false; // replace with actual auth logic
-  const orders = [
-    { id: "#12345", bike: "Yamaha R15", date: "2025-08-10", status: "Completed" },
-  ];
+const Profile = () => {
+  const { state } = useContext(UserContext);
+  const history = useHistory();
+
+  const [user, setUser] = useState(null);
+  const [orders, setOrders] = useState([]);
+
+  const [passwordData, setPasswordData] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  /* 🔐 Redirect if not logged in */
+  useEffect(() => {
+  if (!state) {
+    history.push("/signin");
+  }
+}, [state, history]);
+
+
+  /* 📦 Fetch profile + orders */
+  useEffect(() => {
+    fetch("/myprofile", {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setUser(data.user);
+        setOrders(data.orders);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
+  /* 🔑 Change password */
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    const res = await fetch("/change-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        oldPassword: passwordData.oldPassword,
+        newPassword: passwordData.newPassword,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (res.status === 200) {
+      alert("Password updated successfully");
+      setPasswordData({
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    } else {
+      alert(data.error || "Password update failed");
+    }
+  };
+
+  const Loginbutton = () => (
+    <button>
+      <NavLink className="btn" to="/signout">
+        Logout
+      </NavLink>
+    </button>
+  );
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-blue-600 text-white shadow-md">
-        <div className="container mx-auto flex justify-between items-center py-4 px-6">
-          <h1 className="text-2xl font-bold">Bike Book</h1>
-          <nav className="space-x-6">
-            <NavLink to="/" className="hover:underline">
-              Home
-            </NavLink>
-            <NavLink to="/rentbike" className="hover:underline">
-              Rent Bikes
-            </NavLink>
-            <a href="#testimonial" className="hover:underline">
-              Testimonial
-            </a>
-            <a href="#contact" className="hover:underline">
-              Contact
-            </a>
-          </nav>
+    <>
+      {/* 🔝 NAVBAR */}
+      <header className="header">
+        <div id="menu-btn" className="fas fa-bars"></div>
+
+        <NavLink className="logo" to="/">
+          Bike<span>Book</span>
+        </NavLink>
+
+        <nav className="navbar">
+          <NavLink to="/">Home</NavLink>
+          <NavLink to="/rentbike">Rent Bikes</NavLink>
+          <NavLink to="/profile">Profile</NavLink>
+          <a href="/#services">Testimonial</a>
+          <a href="/#contact">Contact</a>
+        </nav>
+
+        <div id="login-btn">
+          <Loginbutton />
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-grow container mx-auto py-10 px-6">
-        <div className="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-2">My Profile</h2>
-          {!isLoggedIn && (
-            <p className="text-red-500 mb-6">You are not logged in.</p>
+      {/* 👤 PROFILE DETAILS */}
+      <section className="contact" style={{ marginTop: "110px" }}>
+        <h1 className="heading">
+          <span>My</span> Profile
+        </h1>
+
+        {user && (
+          <div className="row">
+            <form>
+              <h3>User Details</h3>
+
+              <input className="box" value={user.name} readOnly />
+              <input className="box" value={user.email} readOnly />
+              <input className="box" value={user.phone} readOnly />
+            </form>
+          </div>
+        )}
+      </section>
+
+      {/* 🔑 CHANGE PASSWORD */}
+      <section className="contact">
+        <h1 className="heading">
+          <span>Change</span> Password
+        </h1>
+
+        <div className="row">
+          <form onSubmit={handlePasswordChange}>
+            <input
+              type="password"
+              className="box"
+              placeholder="Old Password"
+              value={passwordData.oldPassword}
+              onChange={(e) =>
+                setPasswordData({ ...passwordData, oldPassword: e.target.value })
+              }
+              required
+            />
+
+            <input
+              type="password"
+              className="box"
+              placeholder="New Password"
+              value={passwordData.newPassword}
+              onChange={(e) =>
+                setPasswordData({ ...passwordData, newPassword: e.target.value })
+              }
+              required
+            />
+
+            <input
+              type="password"
+              className="box"
+              placeholder="Confirm New Password"
+              value={passwordData.confirmPassword}
+              onChange={(e) =>
+                setPasswordData({
+                  ...passwordData,
+                  confirmPassword: e.target.value,
+                })
+              }
+              required
+            />
+
+            <input type="submit" className="btn" value="Update Password" />
+          </form>
+        </div>
+      </section>
+
+      {/* 📜 ORDER HISTORY */}
+      <section className="services">
+        <h1 className="heading">
+          <span>Order</span> History
+        </h1>
+
+        <div className="box-container">
+          {orders.length === 0 ? (
+            <p style={{ textAlign: "center" }}>No orders found</p>
+          ) : (
+            orders.map((order) =>
+              order.cartItems.map((item, index) => (
+                <div className="box" key={index}>
+                  <h3>
+                    {item.brand} {item.model}
+                  </h3>
+                  <p>
+                    <strong>Hours:</strong> {item.requiredhours}
+                  </p>
+                  <p>
+                    <strong>Total Bill:</strong> ₹{item.totalbill}
+                  </p>
+                  <p>
+                    <strong>Date:</strong>{" "}
+                    {new Date(order.createdAt).toDateString()}
+                  </p>
+                </div>
+              ))
+            )
           )}
-
-          {/* Tabs */}
-          <div className="flex space-x-6 mb-6 border-b pb-2">
-            <button className="text-blue-600 font-semibold hover:underline">
-              Edit Profile
-            </button>
-            <button className="text-blue-600 font-semibold hover:underline">
-              Order History
-            </button>
-          </div>
-
-          {/* Order History */}
-          <h3 className="text-xl font-semibold mb-4">Order History</h3>
-          <div className="overflow-x-auto">
-            <table className="min-w-full border border-gray-200">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="py-2 px-4 border">Order ID</th>
-                  <th className="py-2 px-4 border">Bike</th>
-                  <th className="py-2 px-4 border">Date</th>
-                  <th className="py-2 px-4 border">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((order) => (
-                  <tr key={order.id}>
-                    <td className="py-2 px-4 border">{order.id}</td>
-                    <td className="py-2 px-4 border">{order.bike}</td>
-                    <td className="py-2 px-4 border">{order.date}</td>
-                    <td className="py-2 px-4 border text-green-600 font-semibold">
-                      {order.status}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-blue-600 text-white py-4 mt-8">
-        <div className="container mx-auto text-center text-sm">
-          &copy; {new Date().getFullYear()} Bike Book. All rights reserved.
-        </div>
-      </footer>
-    </div>
+      </section>
+    </>
   );
-}
+};
+
+export default Profile;
