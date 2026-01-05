@@ -10,7 +10,7 @@ const app = express();
 /* ======================
    ENV CONFIG
 ====================== */
-dotenv.config({ path: './config.env' });
+dotenv.config({ path: './server/config.env' });
 
 
 /* ======================
@@ -39,7 +39,7 @@ app.use(require("./server/router/auth"));
 /* ======================
    STATIC FILES
 ====================== */
-app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static("server/uploads"));
 
 /* ======================
    PRODUCTION BUILD
