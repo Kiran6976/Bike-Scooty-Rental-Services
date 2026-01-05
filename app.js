@@ -16,7 +16,7 @@ dotenv.config({ path: './config.env' });
 /* ======================
    DATABASE
 ====================== */
-require("./database/conn");
+require("./server/database/conn");
 
 /* ======================
    MIDDLEWARE
@@ -34,7 +34,7 @@ app.use(
 /* ======================
    ROUTES
 ====================== */
-app.use(require("./router/auth"));
+app.use(require("./server/router/auth"));
 
 /* ======================
    STATIC FILES
