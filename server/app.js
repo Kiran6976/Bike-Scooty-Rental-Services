@@ -10,13 +10,13 @@ const app = express();
 /* ======================
    ENV CONFIG
 ====================== */
-dotenv.config({ path: './server/config.env' });
+dotenv.config({ path: './config.env' });
 
 
 /* ======================
    DATABASE
 ====================== */
-require("./server/database/conn");
+require("./database/conn");
 
 /* ======================
    MIDDLEWARE
@@ -34,12 +34,12 @@ app.use(
 /* ======================
    ROUTES
 ====================== */
-app.use(require("./server/router/auth"));
+app.use(require("./router/auth"));
 
 /* ======================
    STATIC FILES
 ====================== */
-app.use("/uploads", express.static("server/uploads"));
+app.use("/uploads", express.static("/uploads"));
 
 /* ======================
    PRODUCTION BUILD
