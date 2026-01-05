@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from 'react'
 import { NavLink, useHistory } from "react-router-dom";
-
+import { apiFetch } from "../utils/apiFetch";
 import { UserContext } from "../App"
 
 const Rentabike = () => {
@@ -19,7 +19,7 @@ const Rentabike = () => {
                 history.push('/signin')
             }
 
-            const res = await fetch ('/getRentBikeData', {
+            const res = await apiFetch ('/getRentBikeData', {
                 method: 'GET',
             });
 
@@ -111,7 +111,7 @@ const Rentabike = () => {
         let itemId = e.target.id;
        
 
-        const res = await fetch("/addrentcartocart", {
+        const res = await apiFetch("/addrentcartocart", {
             method: "POST",
             headers:{
                 "Content-Type" : "application/json"
@@ -155,7 +155,7 @@ const Rentabike = () => {
     const [searchText, setSearchText] = useState('');
 
     const searchTextBtn = async () =>{
-        const res = await fetch("/searchRentBike", {
+        const res = await apiFetch("/searchRentBike", {
             method: "POST",
             headers:{
                 "Content-Type" : "application/json"
@@ -172,7 +172,7 @@ const Rentabike = () => {
 
     const getSearchData = async () =>{
         try {
-            const res = await fetch ('/rentbikesearchCategory', {
+            const res = await apiFetch ('/rentbikesearchCategory', {
                 method: 'GET',
             });
 

@@ -1,6 +1,7 @@
 import React, {useEffect, useContext} from 'react';
 import "../dashboard.css";
 import {NavLink, useHistory} from "react-router-dom";
+import { apiFetch } from "../utils/apiFetch";
 
 import { AdminContext } from "../App"
 
@@ -12,7 +13,7 @@ const Dashboard = () => {
 
   const callDashboard =  async () =>{
       try {
-          const res = await fetch('/dashboard', {
+          const res = await apiFetch('/dashboard', {
             method: "GET",
             headers: {
               Accept : "application/json",

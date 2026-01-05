@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useContext} from 'react'
 import { NavLink, useHistory } from "react-router-dom";
 import Stripe from "react-stripe-checkout";
-
+import { apiFetch } from "../utils/apiFetch";
 import { UserContext } from "../App"
 
 const Mycart = () => {
@@ -15,7 +15,7 @@ const Mycart = () => {
 
     const getCartData = async () =>{
         try {
-            const res = await fetch ('/getCartData', {
+            const res = await apiFetch ('/getCartData', {
                 method: 'GET',
             });
 
@@ -43,7 +43,7 @@ const Mycart = () => {
     })
 
     const handlePayMethod = (itemsPrice, token) =>{    
-        return fetch("/stripePay", {
+        return apiFetch("/stripePay", {
                 method: "POST",
                 headers:{
                     "Content-Type" : "application/json"
@@ -62,7 +62,7 @@ const Mycart = () => {
     }
 
     const updateDataBase = () =>{
-        return fetch("/updateDataBase", {
+        return apiFetch("/updateDataBase", {
             method: "POST",
             headers:{
                 "Content-Type" : "application/json"
@@ -94,7 +94,7 @@ const Mycart = () => {
     let cartitemid
     const deleteItem = (e) =>{
         cartitemid = e.target.id;
-        return fetch("/deleteitemfromcart", {
+        return apiFetch("/deleteitemfromcart", {
           method: "POST",
           headers:{
               "Content-Type" : "application/json"

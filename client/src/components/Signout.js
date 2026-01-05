@@ -1,6 +1,6 @@
 import React, {useEffect, useContext} from 'react'
 import { NavLink, useHistory } from "react-router-dom";
-
+import { apiFetch } from "../utils/apiFetch";
 import { UserContext } from "../App"
 
 const Signout = () => {
@@ -8,7 +8,7 @@ const Signout = () => {
     const history = useHistory();
 
     useEffect(()=>{
-        fetch('/signout',{
+        apiFetch('/signout',{
             method: "GET",
             headers: {
                 Accept: "application/json",

@@ -2,6 +2,7 @@
 import React, {useState, useEffect, useContext} from 'react'
 import { NavLink } from "react-router-dom";
 import { UserContext } from "../App"
+import { apiFetch } from "../utils/apiFetch";
 
 const Home = () => {
     const [userData, setUserData] = useState({name:"", email:"", phone:"", message:""});
@@ -15,7 +16,7 @@ const Home = () => {
 
     const userContact = async () =>{
         try {
-            const res = await fetch ('/getdata', {
+            const res = await apiFetch ('/getdata', {
                 method: 'GET',
                 headers:{
                     "Content-Type" : "application/json"
@@ -54,7 +55,7 @@ const Home = () => {
 
         const {name, email, phone, message}= userData;
 
-        const res = await fetch('/contact',{
+        const res = await apiFetch('/contact',{
             method:'POST',
             headers: {
                 "Content-Type" : "application/json"

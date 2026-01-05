@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react'
 import { useHistory } from "react-router-dom";
-
+import { apiFetch } from "../utils/apiFetch";
 
 
 const AdminSignout = () => {
@@ -10,7 +10,7 @@ const AdminSignout = () => {
     const history = useHistory();
 
     useEffect(()=>{
-        fetch('/adminsignout',{
+        apiFetch('/adminsignout',{
             method: "GET",
             headers: {
                 Accept: "application/json",

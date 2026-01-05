@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useContext} from 'react'
 import {NavLink} from "react-router-dom";
+import { apiFetch } from "../../utils/apiFetch";
 
 import { AdminContext } from "../../App"
 
@@ -11,7 +12,7 @@ const Getrentbikes = () => {
 
   const getallrenttbikes = async () =>{
     try {
-        const res = await fetch ('/getAvailableRentBikes', {
+        const res = await apiFetch ('/getAvailableRentBikes', {
             method: 'GET',
         });
 
@@ -29,7 +30,7 @@ useEffect(() => {
 }, [])
 const deleteBike = async (bikeId) => {
   try {
-    const res = await fetch("/deleteRentBikeFromDashboard", {
+    const res = await apiFetch("/deleteRentBikeFromDashboard", {
       method: "POST",
       credentials: "include",
       headers: {

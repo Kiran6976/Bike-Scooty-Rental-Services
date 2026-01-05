@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import "../registerStyle.css"
 import { NavLink, useHistory } from 'react-router-dom'
-
+import { apiFetch } from "../utils/apiFetch";
 
 const Signup = () => {
 
@@ -29,7 +29,7 @@ const Signup = () => {
 
         const {name, phone, email, password, cPassword} = user;
 
-        const res = await fetch("/signup", {
+        const res = await apiFetch("/signup", {
             method: "POST",
             headers:{
                 "Content-Type" : "application/json"

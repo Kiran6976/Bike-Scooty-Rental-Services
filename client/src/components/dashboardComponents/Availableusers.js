@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from 'react'
 import {NavLink} from "react-router-dom";
-
+import { apiFetch } from "../../utils/apiFetch";
 import { AdminContext } from "../../App"
 const Availableusers = () => {
   
@@ -11,7 +11,7 @@ const Availableusers = () => {
 
   const getallusers = async () =>{
     try {
-        const res = await fetch ('/getavailableusers', {
+        const res = await apiFetch ('/getavailableusers', {
             method: 'GET',
         });
 
@@ -30,7 +30,7 @@ useEffect(() => {
 
 const deleteUser = async (userId) => {
   try {
-    const res = await fetch("/deleteUserfromdashboard", {
+    const res = await apiFetch("/deleteUserfromdashboard", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

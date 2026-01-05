@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { NavLink, useHistory } from "react-router-dom";
 import { UserContext } from "../App";
-
+import { apiFetch } from "../utils/apiFetch";
 const Profile = () => {
   const { state } = useContext(UserContext);
   const history = useHistory();
@@ -23,9 +23,9 @@ const Profile = () => {
 }, [state, history]);
 
 
-  /* 📦 Fetch profile + orders */
+  /* 📦 apiFetch profile + orders */
   useEffect(() => {
-    fetch("/myprofile", {
+    apiFetch("/myprofile", {
       method: "GET",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -47,7 +47,7 @@ const Profile = () => {
       return;
     }
 
-    const res = await fetch("/change-password", {
+    const res = await apiFetch("/change-password", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",

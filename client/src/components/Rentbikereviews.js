@@ -1,8 +1,7 @@
 import React, {useState, useEffect, useContext} from 'react'
 import { NavLink, useLocation, useHistory } from "react-router-dom";
-
+import apiFetch from "../utils/apiFetch";
 import { UserContext } from "../App"
-
 const Rentbikereviews = () => {
 
     const {state, dispatch} = useContext(UserContext)
@@ -27,7 +26,7 @@ const Rentbikereviews = () => {
 
     const sendId = async () =>{
         try {
-            const res = await fetch("/sendReviewRentBikeId", {
+            const res = await apiFetch("/sendReviewRentBikeId", {
                 method: "POST",
                 headers:{
                     "Content-Type" : "application/json"
@@ -53,7 +52,7 @@ const Rentbikereviews = () => {
 
     const reviewBikeData = async () =>{
         try {
-            const res = await fetch ('/getRentBikeReviews', {
+            const res = await apiFetch ('/getRentBikeReviews', {
                 method: 'GET',
             });
 
@@ -91,7 +90,7 @@ const Rentbikereviews = () => {
 
     const getallreviews = async () =>{
         try {
-            const res = await fetch ('/getallreviewsforselectedrentbike', {
+            const res = await apiFetch ('/getallreviewsforselectedrentbike', {
                 method: 'GET',
             });
 
@@ -126,7 +125,7 @@ const Rentbikereviews = () => {
 
         const {id, name, email, message}= userData;
 
-        const res = await fetch('/postrentbikereviews',{
+        const res = await apiFetch('/postrentbikereviews',{
             method:'POST',
             headers: {
                 "Content-Type" : "application/json"

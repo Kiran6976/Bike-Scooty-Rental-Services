@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from 'react'
 import { NavLink, useHistory } from "react-router-dom";
-
+import { apiFetch } from "../utils/apiFetch";
 
 import { UserContext } from "../App"
 
@@ -14,7 +14,7 @@ const Rentbikecart = () => {
 
     const getCartData = async () =>{
         try {
-            const res = await fetch ('/getRentCartData', {
+            const res = await apiFetch ('/getRentCartData', {
                 method: 'GET',
             });
 
@@ -44,7 +44,7 @@ const Rentbikecart = () => {
     })
 
     const handlePayMethod = (itemsPrice, token) =>{
-            return fetch("/stripeRentPay", {
+            return apiFetch("/stripeRentPay", {
                 method: "POST",
                 headers:{
                     "Content-Type" : "application/json"
@@ -66,7 +66,7 @@ const Rentbikecart = () => {
 
 
     const updateDataBase = () =>{
-        return fetch("/updateRentDataBase", {
+        return apiFetch("/updateRentDataBase", {
             method: "POST",
             headers:{
                 "Content-Type" : "application/json"
@@ -100,7 +100,7 @@ const Rentbikecart = () => {
 const deleteRentItem = (e) => {
   rentCartItemId = e.target.id;
 
-  return fetch("/deleteRentCartItem", {
+  return apiFetch("/deleteRentCartItem", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -117,7 +117,7 @@ const deleteRentItem = (e) => {
 };
 
 const loadRazorpay = async () => {
-  const res = await fetch("/create-razorpay-order", {
+  const res = await apiFetch("/create-razorpay-order", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ amount: itemsPrice }),
@@ -134,7 +134,7 @@ const loadRazorpay = async () => {
     order_id: order.id,
 
     handler: async function (response) {
-      const verifyRes = await fetch("/verify-razorpay", {
+      const verifyRes = await apiFetch("/verify-razorpay", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(response),

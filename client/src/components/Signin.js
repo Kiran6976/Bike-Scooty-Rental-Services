@@ -1,5 +1,7 @@
 import React, {useState, useContext} from 'react'
 import { NavLink, useHistory } from "react-router-dom";
+import apiFetch from "../utils/apiFetch";
+
 
 import { UserContext } from "../App"
 
@@ -18,7 +20,7 @@ const Signin = () => {
     const signinUser =  async (e) =>{
         e.preventDefault();
 
-        const res = await fetch('/signin', {
+        const res = await apiFetch('/signin', {
             method : "POST",
             headers : {
                 "Content-Type" : "application/json"

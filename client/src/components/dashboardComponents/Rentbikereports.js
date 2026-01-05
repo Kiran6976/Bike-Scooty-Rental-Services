@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from 'react'
 import {NavLink} from "react-router-dom";
-
+import { apiFetch } from "../../utils/apiFetch";
 import { AdminContext } from "../../App"
 
 const Rentbikereports = () => {
@@ -12,7 +12,7 @@ const Rentbikereports = () => {
 
   const getrentbikeincome = async () =>{
       try {
-          const res = await fetch ('/getrentbikeincome', {
+          const res = await apiFetch ('/getrentbikeincome', {
               method: 'GET',
           });
 

@@ -1,5 +1,6 @@
 import React, {useState, useContext} from 'react'
 import { NavLink, useHistory } from "react-router-dom";
+import { apiFetch } from "../utils/apiFetch";
 
 import { AdminContext } from "../App"
 
@@ -15,7 +16,7 @@ const AdminSignin = () => {
     const signinAdmin =  async (e) =>{
         e.preventDefault();
 
-        const res = await fetch('/signinAdmin', {
+        const res = await apiFetch('/signinAdmin', {
             method : "POST",
             headers : {
                 "Content-Type" : "application/json"

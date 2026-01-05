@@ -1,5 +1,6 @@
 import React, {useState, useContext} from 'react'
 import {NavLink, useHistory} from "react-router-dom";
+import { apiFetch } from "../../utils/apiFetch";
 
 import { AdminContext } from "../../App"
 
@@ -57,7 +58,7 @@ const Addbikes = () => {
         formData.append('myfile', file.myfile) 
        
        
-        const res = await fetch("/addbikes", {
+        const res = await apiFetch("/addbikes", {
             method: "POST",
             body: formData
               
@@ -109,7 +110,7 @@ const Addbikes = () => {
         rentData.append('myrentfile', rentFile.myrentfile) 
        
        
-        const res = await fetch("/addrentbikes", {
+        const res = await apiFetch("/addrentbikes", {
             method: "POST",
             body: rentData
         })
