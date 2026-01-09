@@ -10,28 +10,36 @@ const app = express();
 /* ======================
    ENV CONFIG
 ====================== */
-dotenv.config({ path: './config.env' });
-
+dotenv.config({ path: "./config.env" });
 
 /* ======================
    DATABASE
 ====================== */
 require("./database/conn");
 
-
-
 /* ======================
-   MIDDLEWARE
+   CORS (MUST BE FIRST)
 ====================== */
-app.use(express.json());
-app.use(cookieParser());
-
 app.use(
   cors({
-    origin: true,
+    origin: [
+      "http://localhost:3000",
+      "https://bike-scooty-rental-services.vercel.app"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
+
+// Handle preflight
+app.options("*", cors());
+
+/* ======================
+   BODY PARSER
+====================== */
+app.use(express.json());
+app.use(cookieParser());
 
 /* ======================
    ROUTES
