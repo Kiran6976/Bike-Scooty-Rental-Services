@@ -12,14 +12,16 @@ export const apiFetch = async (endpoint, options = {}) => {
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
-    headers,
-    credentials: "include", // important for cookies/JWT
+    headers
   });
 
-  // Optional but recommended
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error ||errorData.message || "API request failed");
+    throw new Error(
+      errorData.error ||
+      errorData.message ||
+      "API request failed"
+    );
   }
 
   return response.json();
