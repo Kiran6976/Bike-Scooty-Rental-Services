@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../registerStyle.css";
 import { NavLink, useHistory } from "react-router-dom";
-import { apiFetch } from "../utils/apiFetch";
+import apiFetch  from "../utils/apiFetch";
 
 const Signup = () => {
   const history = useHistory();
