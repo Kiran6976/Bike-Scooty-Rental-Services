@@ -1,40 +1,41 @@
-import React, {useEffect, useContext} from 'react'
-import { NavLink, useHistory } from "react-router-dom";
-import { apiFetch } from "../utils/apiFetch";
-import { UserContext } from "../App"
+import React, { useEffect, useContext } from "react";
+import { useHistory } from "react-router-dom";
+import apiFetch from "../utils/apiFetch";
+import { UserContext } from "../App";
 
 const Signout = () => {
+  const history = useHistory();
+  const { dispatch } = useContext(UserContext);
 
-    const history = useHistory();
+  useEffect(() => {
+    const logoutUser = async () => {
+      try {
+        await apiFetch("/signout", {
+          method: "GET",
+        });
 
-    useEffect(()=>{
-        apiFetch('/signout',{
-            method: "GET",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json"
-            },
-            credentials: "include"
-        })
-        .then((res)=>{
-            localStorage.removeItem("User")
-            history.push('/signin', {replace: true})
-            window.location.reload();
-            if(res.status != 200){
-                const error = new Error(res.error);
-                throw error;
-            }
-        })
-        .catch((error)=>{
-            console.log(error);
-        })
-    })
+        // clear auth state
+        dispatch({ type: "USER", payload: false });
+        localStorage.removeItem("User");
 
-    return (
-        <>
-            <h1>Log Out</h1>
-        </>
-    )
-}
+        // redirect to signin
+        history.replace("/signin");
 
-export default Signout
+        // optional hard refresh (if you rely on cookies heavily)
+        window.location.reload();
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
+
+    logoutUser();
+  }, [dispatch, history]);
+
+  return (
+    <>
+      <h1>Logging out...</h1>
+    </>
+  );
+};
+
+export default Signout;

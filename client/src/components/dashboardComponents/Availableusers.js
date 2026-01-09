@@ -4,52 +4,49 @@ import { apiFetch } from "../../utils/apiFetch";
 import { AdminContext } from "../../App"
 const Availableusers = () => {
   
-  const {adminState, dispatchadmin} = useContext(AdminContext)
+  const {adminState} = useContext(AdminContext)
 
   const [getUsers, setGetUsers] = useState([]);
 
 
-  const getallusers = async () =>{
+  const getallusers = async () => {
     try {
-        const res = await apiFetch ('/getavailableusers', {
-            method: 'GET',
-        });
+      const data = await apiFetch("/getavailableusers", {
+        method: "GET",
+        credentials: "include",
+      });
 
-        const data = await res.json();
-        setGetUsers(data);
-
+      setGetUsers(data);
+    } catch (error) {
+      console.error("Failed to fetch users:", error.message);
     }
-    catch (error) {
-        console.log(error)
+  };
+
+  useEffect(() => {
+    getallusers();
+  }, []);
+
+  /* ✅ FIXED */
+  const deleteUser = async (userId) => {
+    try {
+      const data = await apiFetch("/deleteUserfromdashboard", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          userIdFromDashBoard: userId,
+        }),
+      });
+
+      if (data.success) {
+        setGetUsers((prev) => prev.filter((u) => u._id !== userId));
+      }
+    } catch (error) {
+      console.error("Delete user failed:", error.message);
     }
-}
-
-useEffect(() => {
-  getallusers();
-}, [])
-
-const deleteUser = async (userId) => {
-  try {
-    const res = await apiFetch("/deleteUserfromdashboard", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userIdFromDashBoard: userId,
-      }),
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-      // remove user from UI instantly
-      setGetUsers((prev) => prev.filter((u) => u._id !== userId));
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
+  };
 
 
 

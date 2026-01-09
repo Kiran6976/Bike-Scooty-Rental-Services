@@ -910,3 +910,157 @@ section{
 }
 
 
+/* ===============================
+   🔧 RENT BIKE RESPONSIVE FIX
+   (Override old grid safely)
+================================ */
+
+/* Grid container */
+.rentbikebiked{
+    display: grid;
+    grid-template-columns: repeat(4, minmax(220px, 1fr));
+    gap: 20px;
+    background-color: #f1f1f1;
+    padding: 120px 40px 40px;
+}
+
+
+/* Bike card */
+.bikedivRentbike{
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    border-radius: 8px;
+    padding: 20px;
+    font-size: 14px;
+    text-align: center;
+    color: #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Bike image */
+.bikedivRentbike img{
+    width: 100%;
+    height: 160px;
+    
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+/* Buttons */
+.bikedbtn {
+  width: 100% !important;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+/* Form inside card */
+.bikedivRentbike form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ===============================
+   📱 Mobile Fix
+================================ */
+@media (max-width: 600px) {
+  .rentbikebiked {
+    padding: 120px 15px 30px !important;
+  }
+
+  .bikedivRentbike img {
+    height: 180px;
+  }
+}
+
+.cart-container {
+  max-width: 900px;
+  margin: auto;
+}
+
+.cart-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  margin-bottom: 2rem;
+}
+
+.cart-info h3 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.cart-price {
+  text-align: right;
+}
+
+.cart-price h2 {
+  color: #ff6a00;
+  font-size: 2rem;
+}
+
+.delete-btn {
+  background: #111;
+  color: #fff;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  cursor: pointer;
+}
+
+.cart-summary {
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.cart-summary h3 {
+  font-size: 2rem;
+}
+
+.cart-summary .total {
+  font-size: 2.8rem;
+  font-weight: 800;
+}
+
+.pay-btn {
+  font-size: 1.8rem;
+  padding: 1.4rem;
+}
+
+.trust-text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 1.2rem;
+}
+
+.price-row {
+  display: flex;
+  gap: 1.2rem;
+  align-items: center;
+  margin-top: 0.8rem;
+}
+
+.price-per-hour {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.hours-badge {
+  background: #fff4ec;
+  color: #ff6a00;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}

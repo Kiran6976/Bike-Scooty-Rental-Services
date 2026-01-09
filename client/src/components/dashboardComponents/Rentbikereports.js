@@ -5,24 +5,23 @@ import { AdminContext } from "../../App"
 
 const Rentbikereports = () => {
 
-  const {adminState, dispatchadmin} = useContext(AdminContext)
+  const {adminState} = useContext(AdminContext)
 
   const [income, setIncome] = useState([]);
   let allsoldItems = [];
 
   const getrentbikeincome = async () =>{
       try {
-          const res = await apiFetch ('/getrentbikeincome', {
+          const data = await apiFetch ('/getrentbikeincome', {
               method: 'GET',
           });
 
-          const data = await res.json();
           
           setIncome(data);
 
       }
       catch (error) {
-          console.log(error)
+          console.log("Failed to fetch rent bike income:", error.message);
       }
   }
 

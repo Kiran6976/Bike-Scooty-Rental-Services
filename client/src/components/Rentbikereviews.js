@@ -1,232 +1,185 @@
-import React, {useState, useEffect, useContext} from 'react'
-import { NavLink, useLocation, useHistory } from "react-router-dom";
+import React, { useEffect, useState, useContext } from "react";
+import { NavLink, useParams } from "react-router-dom";
 import apiFetch from "../utils/apiFetch";
-import { UserContext } from "../App"
+import { UserContext } from "../App";
+
 const Rentbikereviews = () => {
+  const { state } = useContext(UserContext);
+  const { bikeId } = useParams();
 
-    const {state, dispatch} = useContext(UserContext)
+  const [bike, setBike] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [user, setUser] = useState(null);
+  const [message, setMessage] = useState("");
 
-    let location = useLocation();
-    const selectedBikeId = location.state
-    const [userData, setUserData] = useState({id:"", name:"", email:"", message:""});
-    const [renttbikesData, setrenttbikesData] = useState({
-        id: "",
-        brand : "",
-        model : "",
-        year : "",
-        color : "",
-        seats : "",
-        rent : "",
-        fileName : "",
-        filePath : "",
-        fileType : "",
-        fileSize : ""
+  /* =========================
+     FETCH BIKE + USER
+  ========================== */
+  const loadBike = async () => {
+    const data = await apiFetch(
+      `/rentbike/${bikeId}/reviews/data`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+
+    setBike(data.findBike);
+    setUser(data.findUser);
+  };
+
+  /* =========================
+     FETCH REVIEWS
+  ========================== */
+  const loadReviews = async () => {
+    const data = await apiFetch(
+      `/rentbike/${bikeId}/reviews`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+
+    setReviews(data.allReviews);
+  };
+
+  /* =========================
+     SUBMIT REVIEW
+  ========================== */
+  const submitReview = async (e) => {
+    e.preventDefault();
+
+    if (!message.trim()) {
+      alert("Please write a review");
+      return;
+    }
+
+    await apiFetch(`/rentbike/${bikeId}/reviews`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: user.name,
+        email: user.email,
+        message,
+      }),
     });
-    const [allrenttbikeReviews, setAllrenttbikeReviews] = useState([]);
 
-    const sendId = async () =>{
-        try {
-            const res = await apiFetch("/sendReviewRentBikeId", {
-                method: "POST",
-                headers:{
-                    "Content-Type" : "application/json"
-                },
-                body: JSON.stringify({
-                    selectedBikeId
-                })
-            })
+    setMessage("");
+    loadReviews();
+  };
 
-            if(!res.status === 200){
-                const error = new Error(res.error);
-                throw error;
-            }
-
-        } catch (error) {
-            console.log(error)
-        }
+  /* =========================
+     INIT LOAD
+  ========================== */
+  useEffect(() => {
+    if (bikeId) {
+      loadBike();
+      loadReviews();
     }
+  }, [bikeId]);
 
-    useEffect(() => {
-        sendId();
-    }, [])
+  /* =========================
+     LOGIN BUTTON
+  ========================== */
+  const Loginbutton = () =>
+    state ? (
+      <NavLink className="btn" to="/signout">Logout</NavLink>
+    ) : (
+      <NavLink className="btn" to="/signin">Login</NavLink>
+    );
 
-    const reviewBikeData = async () =>{
-        try {
-            const res = await apiFetch ('/getRentBikeReviews', {
-                method: 'GET',
-            });
+  if (!bike) return <h2 style={{ textAlign: "center" }}>Loading...</h2>;
 
-            const data = await res.json();
-            setrenttbikesData({
-            id : data.findBike._id,
-            brand : data.findBike.brand,
-            model : data.findBike.model,
-            year : data.findBike.year,
-            color : data.findBike.color,
-            seats : data.findBike.seats,
-            rent : data.findBike.rent,
-            fileName : data.findBike.fileName,
-            filePath : data.findBike.filePath,
-            fileType : data.findBike.fileType,
-            fileSize : data.findBike.fileSize
-            })
-            
-            setUserData({...userData, id:data.findUser._id, name:data.findUser.name, email:data.findUser.email})
+  return (
+    <>
+      {/* HEADER */}
+      <header className="header">
+        <NavLink className="logo" to="/">
+          <span>Bike</span>Book
+        </NavLink>
 
-            if(!res.status === 200){
-                const error = new Error(res.error);
-                throw error;
-            }
+        <nav className="navbar">
+          <NavLink to="/">Home</NavLink>
+          <NavLink to="/rentbike">Rent Bikes</NavLink>
+        </nav>
 
-        } catch (error) {
-            console.log(error)
-        }
-    }
-    useEffect(() => {
-        reviewBikeData();
-    }, [])
+        <div id="login-btn">{Loginbutton()}</div>
+      </header>
 
+      {/* BIKE DETAILS */}
+      <div className="reviewsdiv">
+        <img
+          src={`${process.env.REACT_APP_API_URL}${bike.filePath}`}
+          alt={bike.model}
+          style={{ width: "60%", maxHeight: "400px", objectFit: "contain" }}
+        />
 
+        <h3>{bike.brand} {bike.model}</h3>
+        <p>Year: {bike.year}</p>
+        <p>Color: {bike.color}</p>
+        <p>Seats: {bike.seats}</p>
+        <p>Rent / Hour: ₹{bike.rent}</p>
+      </div>
 
-    const getallreviews = async () =>{
-        try {
-            const res = await apiFetch ('/getallreviewsforselectedrentbike', {
-                method: 'GET',
-            });
+      {/* REVIEWS */}
+      <section className="contact">
+        <h1 className="heading">
+          <span>Reviews</span>
+        </h1>
 
-            const data = await res.json();
+        {reviews.length === 0 && (
+          <p style={{ textAlign: "center" }}>No reviews yet</p>
+        )}
 
-            setAllrenttbikeReviews(data.allReviews);
+        {reviews.map((rev, i) => (
+          <div className="reviewsli" key={i}>
+            <strong>{rev.name}</strong>
+            <p>{rev.comments}</p>
+          </div>
+        ))}
 
-        }
-        catch (error) {
-            console.log(error)
-        }
-    }
+        {/* WRITE REVIEW */}
+        {state && user && (
+          <div className="row">
+            <form onSubmit={submitReview}>
+              <h3>Write Your Review</h3>
 
-    useEffect(() => {
-        getallreviews();
-    }, [])
+              <input
+                type="text"
+                value={user.name}
+                disabled
+                className="box"
+              />
 
+              <input
+                type="email"
+                value={user.email}
+                disabled
+                className="box"
+              />
 
+              <textarea
+                className="box"
+                placeholder="Write your review..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                rows="5"
+              />
 
-    const handleInputs = (e) =>{
-        const name = e.target.name;
-        const value = e.target.value;
+              <input type="submit" className="btn" value="Submit Review" />
+            </form>
+          </div>
+        )}
 
-        setUserData({...userData, [name]:value });
-    }
+        {!state && (
+          <p style={{ textAlign: "center" }}>
+            <NavLink to="/signin">Login</NavLink> to write a review
+          </p>
+        )}
+      </section>
+    </>
+  );
+};
 
-
-
-     
-    const submitReviews = async (e) =>{
-        e.preventDefault();
-
-        const {id, name, email, message}= userData;
-
-        const res = await apiFetch('/postrentbikereviews',{
-            method:'POST',
-            headers: {
-                "Content-Type" : "application/json"
-            },
-            body : JSON.stringify({
-                id, name, email, message, selectedBikeId
-            })
-        });
-
-        const data = await res.json();
-
-
-        if(data.status === 500 || !data){
-            window.alert("reviews not submited");
-            console.log("reviews not submited");
-        }
-        else if(data.status===201){
-            window.alert("reviews submited");
-            setUserData({...userData, message:""});
-        }
-        else{
-            window.alert("reviews submited");
-            setUserData({...userData, message:""});
-        }
-    }
-
-
-    
-   
-    
-    const Loginbutton= () =>{
-        
-        if(state){
-            return <div> 
-                <button ><NavLink className="btn" to="/signout">logout</NavLink></button>      
-            </div>
-        }
-        else{
-            return <div>  
-                    <button ><NavLink className="btn" to="/signin">login</NavLink></button>
-                    
-                </div>
-        }
-    }
-
-
-    return (
-        <>
-            <header className="header">
-                <div id="menu-btn" className="fas fa-bars"></div>
-                <NavLink className="logo" to="/"> <span>Bike</span>Book </NavLink>
-                <nav className="navbar">
-                    <NavLink to="/">Home</NavLink>
-                    <NavLink to="/rentbike">Rent Bikes</NavLink>
-                </nav>
-                <div id="login-btn">
-                <Loginbutton />
-                </div>
-            </header>
-            
-
-            
-            <div className = "reviewsdiv">    
-
-                <img src={renttbikesData.filePath} alt="" style={{width: "80%", height: "70%"}}/>
-                <h4><b>{renttbikesData.brand}</b></h4>
-                <p>Model : {renttbikesData.model}</p>
-                <p>Year : {renttbikesData.year}</p>
-                <p>Color : {renttbikesData.color}</p>
-                <p>Seats : {renttbikesData.seats}</p>
-                <p>Rent : {renttbikesData.rent}</p>
-
-            </div>
-                   
-            
-        <section className="contact" id="contact">
-            <h1 className="heading"><span>Reviews</span></h1>
-
-            {allrenttbikeReviews.map((allrenttbikeReviews) => 
-                    <div className = "reviewsli"  key={allrenttbikeReviews._id}>
-                            <ul>
-                                <li style={{wordSpacing: "10px"}}>{allrenttbikeReviews.name} :- {allrenttbikeReviews.comments}</li>
-                            </ul> 
-                        </div>
-                     
-            )}
-
-            <div className="row">
-                <form method="POST">
-                    <h3>write your reviews</h3>
-                    <input type="text" name="name" value={userData.name} onChange={handleInputs} placeholder="your name" className="box"/>
-                    <input type="email" name="email" value={userData.email} onChange={handleInputs} placeholder="your email" className="box"/>
-                    <textarea placeholder="your reviews" name="message" value={userData.message} onChange={handleInputs} className="box" cols="30" rows="10"></textarea>
-                    <input type="submit" value="submit reviews" onClick={submitReviews} className="btn"/>
-                </form>
-
-            </div>
-
-        </section>
-        </>
-    )
-}
-
-export default Rentbikereviews
+export default Rentbikereviews;

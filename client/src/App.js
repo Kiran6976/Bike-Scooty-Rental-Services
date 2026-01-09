@@ -18,6 +18,7 @@ import Rentbikereviews from "./components/Rentbikereviews";
 import Signout from "./components/Signout";
 import ExploreRentBike from "./components/ExploreRentBike";
 import Profile from "./components/Profile";
+import BookingConfirmation from "./components/BookingConfirmation";
 
 
 import {initialState, reducer} from "../src/reducer/UseReducer"
@@ -47,9 +48,11 @@ const App = () => {
       <Route path="/rentbike"> <Rentabike/> </Route>
       <Route path="/rentbikecart"> <Rentbikecart/> </Route>
       <Route path="/profile"> <Profile/> </Route>
-      <Route path="/rentbikereviews"> <Rentbikereviews/> </Route>
+      <Route path="/rentbikereviews/:bikeId"> <Rentbikereviews/> </Route>
       <Route path="/exploreRentBikes"> <ExploreRentBike/> </Route>
+      <Route path="/bookingconfirmation"> <BookingConfirmation/> </Route>
       </UserContext.Provider>
+
 
       <AdminContext.Provider value={{adminState, dispatchadmin}}>
       <Route path="/adminsignin"> <AdminSignin/> </Route>

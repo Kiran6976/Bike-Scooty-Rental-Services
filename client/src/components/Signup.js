@@ -1,116 +1,282 @@
-import React, {useState} from 'react'
-import "../registerStyle.css"
-import { NavLink, useHistory } from 'react-router-dom'
+import React, { useState, useEffect } from "react";
+import "../registerStyle.css";
+import { NavLink, useHistory } from "react-router-dom";
 import { apiFetch } from "../utils/apiFetch";
 
 const Signup = () => {
+  const history = useHistory();
 
-    const history = useHistory();
-    const [user, setUser] = useState({
-        name : "",
-        email : "",
-        phone : "",
-        password : "",
-        cPassword : ""
-    });
+  const [user, setUser] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    cPassword: "",
+  });
 
-    let name, value;
+  const [otp, setOtp] = useState("");
+  const [showOtp, setShowOtp] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-    const handleInputs = (e) =>{
-        name = e.target.name;
-        value = e.target.value;
+  const [timer, setTimer] = useState(60);
+  const [canResend, setCanResend] = useState(false);
 
-        setUser({...user, [name]:value});
+  // ⏱ OTP TIMER
+  useEffect(() => {
+    if (!showOtp) return;
+
+    if (timer > 0) {
+      const interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+
+      return () => clearInterval(interval);
     }
 
-    
-    const postData = async (e) =>{
-        e.preventDefault();
+    setCanResend(true);
+  }, [timer, showOtp]);
 
-        const {name, phone, email, password, cPassword} = user;
+  const handleInputs = (e) => {
+    const { name, value } = e.target;
+    setUser({ ...user, [name]: value });
+  };
 
-        const res = await apiFetch("/signup", {
-            method: "POST",
-            headers:{
-                "Content-Type" : "application/json"
-            },
-            body: JSON.stringify({
-                name, phone, email, password, cPassword
-            })
-        })
-        
-        const data = await res.json();
+  // 🔹 SIGNUP → SEND OTP
+  const postData = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-        if(data.status === 422 || !data){
-            window.alert("Invalid Registration");
-            console.log("Invalid Registration");
-        } 
-        else{
-            window.alert("Registration successfull");
-            console.log("Registration successfull");
+    const { name, phone, email, password, cPassword } = user;
 
-            history.push("/");
-        }
+    try {
+      const data = await apiFetch("/signup", {
+        method: "POST",
+        body: JSON.stringify({
+          name,
+          phone,
+          email,
+          password,
+          cPassword,
+        }),
+      });
+
+      console.log("Signup response:", data);
+      window.alert("OTP sent to your email");
+
+      setShowOtp(true);
+      setTimer(60);
+      setCanResend(false);
+
+    } catch (err) {
+      window.alert(err.message);
+      console.error(err.message);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    return (
-<>
-<header className="header">
+  // 🔹 VERIFY OTP
+  const verifyOtp = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-<div id="menu-btn" className="fas fa-bars"></div>
+    try {
+      const data = await apiFetch("/verify-email-otp", {
+        method: "POST",
+        body: JSON.stringify({
+          email: user.email,
+          otp,
+        }),
+      });
 
-<NavLink className="logo" to="/"> <span>Bike</span>Book </NavLink>
+      console.log("OTP verified:", data);
+      window.alert("Email verified successfully");
 
-<nav className="navbar">
-    <NavLink  to="/">Home</NavLink>
-    <NavLink  to="/exploreRentBikes">Bike Showcase</NavLink>
-</nav>
+      history.push("/signin");
 
-<div id="login-btn">
-    <button className="btn"><NavLink className="nav-link" to="/signin">login</NavLink></button>
-</div>
+    } catch (err) {
+      window.alert(err.message);
+      console.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-</header>
+  // 🔹 RESEND OTP
+  const resendOtp = async () => {
+    setLoading(true);
 
-      
-      <div className="maincontainer" >
-  <div className="firstcontainer" >
-    <div className="titled" >Registration</div>
-    <div  className="content" >
-      <form method="POST">
-        <div className="user-details">
-          <div className="input-box">
-            <span className="details">Full Name</span>
-            <input type="text" name="name" id="name" value={user.name} onChange={handleInputs} placeholder="Enter your name"  />
+    try {
+      await apiFetch("/signup", {
+        method: "POST",
+        body: JSON.stringify(user),
+      });
+
+      window.alert("OTP resent successfully");
+      setTimer(60);
+      setCanResend(false);
+
+    } catch (err) {
+      window.alert(err.message);
+      console.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      {/* HEADER */}
+      <header className="header">
+        <div id="menu-btn" className="fas fa-bars"></div>
+
+        <NavLink className="logo" to="/">
+          <span>Bike</span>Book
+        </NavLink>
+
+        <nav className="navbar">
+          <NavLink to="/">Home</NavLink>
+          <NavLink to="/exploreRentBikes">Bike Showcase</NavLink>
+        </nav>
+
+        <div id="login-btn">
+          <button className="btn">
+            <NavLink className="nav-link" to="/signin">
+              login
+            </NavLink>
+          </button>
+        </div>
+      </header>
+
+      {/* SIGNUP FORM */}
+      <div className="maincontainer">
+        <div className="firstcontainer">
+          <div className="titled">
+            {showOtp ? "Verify Email" : "Registration"}
           </div>
-          <div className="input-box">
-            <span className="details">Email</span>
-            <input type="text" name="email" id="email" value={user.email} onChange={handleInputs} placeholder="Enter your email" />
-          </div>
-          <div className="input-box">
-            <span className="details">Phone Number</span>
-            <input type="text" name="phone" id="phone" value={user.phone} onChange={handleInputs} placeholder="Enter your number" />
-          </div>
-          <div className="input-box">
-            <span className="details">Password</span>
-            <input type="password" name="password" id="password" value={user.password} onChange={handleInputs} placeholder="Enter your password" />
-          </div>
-          <div className="input-box">
-            <span className="details">Confirm Password</span>
-            <input type="password" name="cPassword" id="cPassword" value={user.cPassword} onChange={handleInputs} placeholder="Confirm your password" />
+
+          <div className="content">
+            <form method="POST">
+
+              {/* 🔐 SIGNUP FORM */}
+              {!showOtp ? (
+                <>
+                  <div className="user-details">
+                    <div className="input-box">
+                      <span className="details">Full Name</span>
+                      <input
+                        type="text"
+                        name="name"
+                        value={user.name}
+                        onChange={handleInputs}
+                        placeholder="Enter your name"
+                      />
+                    </div>
+
+                    <div className="input-box">
+                      <span className="details">Email</span>
+                      <input
+                        type="text"
+                        name="email"
+                        value={user.email}
+                        onChange={handleInputs}
+                        placeholder="Enter your email"
+                      />
+                    </div>
+
+                    <div className="input-box">
+                      <span className="details">Phone Number</span>
+                      <input
+                        type="text"
+                        name="phone"
+                        value={user.phone}
+                        onChange={handleInputs}
+                        placeholder="Enter your number"
+                      />
+                    </div>
+
+                    <div className="input-box">
+                      <span className="details">Password</span>
+                      <input
+                        type="password"
+                        name="password"
+                        value={user.password}
+                        onChange={handleInputs}
+                        placeholder="Enter your password"
+                      />
+                    </div>
+
+                    <div className="input-box">
+                      <span className="details">Confirm Password</span>
+                      <input
+                        type="password"
+                        name="cPassword"
+                        value={user.cPassword}
+                        onChange={handleInputs}
+                        placeholder="Confirm your password"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="button">
+                    <input
+                      type="submit"
+                      value={loading ? "Sending OTP..." : "Register"}
+                      onClick={postData}
+                      disabled={loading}
+                    />
+                  </div>
+                </>
+              ) : (
+                /* 🔐 OTP VERIFICATION */
+                <>
+                  <div className="user-details">
+                    <div className="input-box">
+                      <span className="details">Enter OTP</span>
+                      <input
+                        type="text"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        placeholder="6-digit OTP"
+                        maxLength={6}
+                      />
+                    </div>
+                  </div>
+
+                  {/* ⏱ TIMER */}
+                  <p style={{ textAlign: "center", marginTop: "10px" }}>
+                    {timer > 0
+                      ? `Resend OTP in ${timer}s`
+                      : "Didn't receive OTP?"}
+                  </p>
+
+                  <div className="button">
+                    <input
+                      type="submit"
+                      value={loading ? "Verifying..." : "Verify OTP"}
+                      onClick={verifyOtp}
+                      disabled={loading}
+                    />
+                  </div>
+
+                  {/* 🔁 RESEND BUTTON */}
+                  <div className="button">
+                    <input
+                      type="button"
+                      value="Resend OTP"
+                      onClick={resendOtp}
+                      disabled={!canResend || loading}
+                    />
+                  </div>
+                </>
+              )}
+
+            </form>
           </div>
         </div>
-        <div className="button">
-          <input type="submit" name="signup" id="signup" value="register" onClick={postData} />
-        </div>
-      </form>
-    </div>
-  </div>
+      </div>
+    </>
+  );
+};
 
-  </div>
-
-</>
-    )
-}
-
-export default Signup
+export default Signup;

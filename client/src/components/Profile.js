@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import { NavLink, useHistory } from "react-router-dom";
 import { UserContext } from "../App";
-import { apiFetch } from "../utils/apiFetch";
+import apiFetch from "../utils/apiFetch";
+
 const Profile = () => {
   const { state } = useContext(UserContext);
   const history = useHistory();
@@ -17,25 +18,27 @@ const Profile = () => {
 
   /* 🔐 Redirect if not logged in */
   useEffect(() => {
-  if (!state) {
-    history.push("/signin");
-  }
-}, [state, history]);
+    if (!state) {
+      history.push("/signin");
+    }
+  }, [state, history]);
 
-
-  /* 📦 apiFetch profile + orders */
+  /* 📦 Fetch profile + orders */
   useEffect(() => {
-    apiFetch("/myprofile", {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    })
-      .then((res) => res.json())
-      .then((data) => {
+    const fetchProfile = async () => {
+      try {
+        const data = await apiFetch("/myprofile", {
+          method: "GET",
+        });
+
         setUser(data.user);
-        setOrders(data.orders);
-      })
-      .catch((err) => console.log(err));
+        setOrders(data.orders || []);
+      } catch (err) {
+        console.error(err.message);
+      }
+    };
+
+    fetchProfile();
   }, []);
 
   /* 🔑 Change password */
@@ -47,27 +50,26 @@ const Profile = () => {
       return;
     }
 
-    const res = await apiFetch("/change-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-        oldPassword: passwordData.oldPassword,
-        newPassword: passwordData.newPassword,
-      }),
-    });
+    try {
+      const data = await apiFetch("/change-password", {
+        method: "POST",
+        body: JSON.stringify({
+          oldPassword: passwordData.oldPassword,
+          newPassword: passwordData.newPassword,
+        }),
+      });
 
-    const data = await res.json();
-
-    if (res.status === 200) {
       alert("Password updated successfully");
+      console.log(data);
+
       setPasswordData({
         oldPassword: "",
         newPassword: "",
         confirmPassword: "",
       });
-    } else {
-      alert(data.error || "Password update failed");
+    } catch (err) {
+      alert(err.message);
+      console.error(err.message);
     }
   };
 
@@ -135,7 +137,10 @@ const Profile = () => {
               placeholder="Old Password"
               value={passwordData.oldPassword}
               onChange={(e) =>
-                setPasswordData({ ...passwordData, oldPassword: e.target.value })
+                setPasswordData({
+                  ...passwordData,
+                  oldPassword: e.target.value,
+                })
               }
               required
             />
@@ -146,7 +151,10 @@ const Profile = () => {
               placeholder="New Password"
               value={passwordData.newPassword}
               onChange={(e) =>
-                setPasswordData({ ...passwordData, newPassword: e.target.value })
+                setPasswordData({
+                  ...passwordData,
+                  newPassword: e.target.value,
+                })
               }
               required
             />

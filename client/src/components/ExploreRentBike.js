@@ -5,7 +5,7 @@ import { UserContext } from "../App"
 
 const ExploreRentBike = () => {
 
-    const {state, dispatch} = useContext(UserContext)
+    const {state} = useContext(UserContext)
 
 
     const Loginbutton= () =>{
@@ -30,19 +30,15 @@ const ExploreRentBike = () => {
 
     const exploreRentBike = async () =>{
         try {
-            const res = await apiFetch ('/exploreRentBikeData', {
+            const data = await apiFetch ('/exploreRentBikeData', {
                 method: 'GET',
             });
 
-            const data = await res.json();
 
             setrenttbikesData(data)
           
 
-            if(!res.status === 200){
-                const error = new Error(res.error);
-                throw error;
-            }
+            
 
         } catch (error) {
             console.log(error)
@@ -55,26 +51,19 @@ const ExploreRentBike = () => {
 
     
 
-    const alertDiv = document.getElementById("alertDiv")
+    const [showAlert, setShowAlert] = useState(false);
+
     const handleClick = () =>{
-        if(alertDiv.style.display === "none"){
-            alertDiv.style.display = "flex"
-            window.alert("Please signin to rent the bike!");
-        }
-        else{
-            alertDiv.style.display = "flex"
+        if(!state){
+            alert("Please signin to explore bike details and rent bikes!");
+            setShowAlert(true); 
         }
     }
-
 
     const hideAlert = () => {
-        if(alertDiv.style.display === "flex"){
-            alertDiv.style.display = "none"
-        }
-        else{
-            alertDiv.style.display = "none"
-        }
-    }
+        setShowAlert(false);
+    };
+     
 
 
     return (
@@ -93,10 +82,13 @@ const ExploreRentBike = () => {
             </div>
             </header>
 
+            {showAlert &&(
+
             <div id="alertDiv" >
             <p>Have you liked it?</p>
             <button className='btn' onClick={hideAlert}><NavLink to="/rentbike" className="nav-link">Rent Now</NavLink></button>
         </div>
+            )}
 
 
         <div className="exploreBikesDiv">

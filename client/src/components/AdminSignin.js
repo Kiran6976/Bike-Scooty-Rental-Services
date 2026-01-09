@@ -1,99 +1,107 @@
-import React, {useState, useContext} from 'react'
+import React, { useState, useContext } from "react";
 import { NavLink, useHistory } from "react-router-dom";
-import { apiFetch } from "../utils/apiFetch";
-
-import { AdminContext } from "../App"
+import apiFetch from "../utils/apiFetch";
+import { AdminContext } from "../App";
 
 const AdminSignin = () => {
+  const { dispatchadmin } = useContext(AdminContext);
+  const history = useHistory();
 
+  const [adminName, setAdminName] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
 
-    const {adminstate, dispatchadmin} = useContext(AdminContext)
+  const signinAdmin = async (e) => {
+    e.preventDefault();
 
-    const adminHistory = useHistory();
-    const [adminName, setAdminName] = useState('');
-    const [adminPassword, setAdminPassword] = useState('');
+    try {
+      // apiFetch already returns parsed JSON
+      const data = await apiFetch("/signinAdmin", {
+        method: "POST",
+        body: JSON.stringify({
+          adminName,
+          adminPassword,
+        }),
+      });
+      console.log(data);
 
-    const signinAdmin =  async (e) =>{
-        e.preventDefault();
+      dispatchadmin({ type: "ADMIN", payload: true });
+      window.alert("Signin Successful");
+      history.push("/dashboard");
 
-        const res = await apiFetch('/signinAdmin', {
-            method : "POST",
-            headers : {
-                "Content-Type" : "application/json"
-            },
-            body:JSON.stringify({
-                adminName,
-                adminPassword
-            })
-        });
-        const data = res.json();
-
-        if(res.status === 400 || !data){
-            window.alert("invalid Credentials");
-        }
-        else{
-            dispatchadmin({type: "ADMIN", payload:true})
-            window.alert("Signin Successfull");
-            adminHistory.push("/dashboard");
-        }
+    } catch (err) {
+      window.alert(err.message || "Invalid credentials");
+      console.error(err.message);
     }
+  };
 
+  return (
+    <>
+      <header className="header">
+        <div id="menu-btn" className="fas fa-bars"></div>
 
+        <NavLink className="logo" to="/">
+          <span>Bike</span>Book
+        </NavLink>
 
+        <nav className="navbar">
+          <NavLink className="nav-link" to="/">Home</NavLink>
+          <a href="/#contact">Contact</a>
+        </nav>
 
-    return (
-        <>
+        <div id="login-btn">
+          <button className="btn">
+            <NavLink className="nav-link" to="/signin">
+              Login
+            </NavLink>
+          </button>
+        </div>
+      </header>
 
-<header className="header">
+      <div className="maincontainer">
+        <div className="firstcontainer">
+          <div className="content" id="adminsignin">
+            <h2>Signin As Admin</h2>
 
-<div id="menu-btn" className="fas fa-bars"></div>
-
-<a href="#" className="logo"> <span>Bike</span>Book </a>
-
-<nav className="navbar">
-<NavLink className="nav-link" to="/">Home</NavLink>
-    <a href="/#contact">Contact</a>
-</nav>
-
-<div id="login-btn">
-    <button className="btn"><NavLink className="nav-link" to="/signin">login</NavLink></button>
-</div>
-
-</header>
-
-            <div className="maincontainer">
-                <div className="firstcontainer">
-                    <div className="titled"></div>
-
-                        <div id = "adminsignin" className="content">
-                            <h2>Signin As Admin</h2>
-                            <form method="POST">
-                                <div className="user-details">
-
-                                    <div className="input-box">
-                                        <span className="details">User Name</span>
-                                        <input type="text" value={adminName} onChange={(e)=>setAdminName(e.target.value)} placeholder="Enter your user name" />
-                                    </div>
-
-                                    <div className="input-box">
-                                        <span className="details">Password</span>
-                                        <input type="password" value={adminPassword} onChange={(e)=>setAdminPassword(e.target.value)} placeholder="Enter your password" />
-                                    </div>
-
-                                </div>
-
-                                <div className="button">
-                                    <input type="submit" value="signin" onClick={signinAdmin} />
-                                </div>
-                            </form>
-                            <button className="btn"><NavLink className="nav-link" to="/signin">Signin As User</NavLink></button>
-                        </div>
-                    </div>
+            <form onSubmit={signinAdmin}>
+              <div className="user-details">
+                <div className="input-box">
+                  <span className="details">User Name</span>
+                  <input
+                    type="text"
+                    value={adminName}
+                    onChange={(e) => setAdminName(e.target.value)}
+                    placeholder="Enter your user name"
+                    required
+                  />
                 </div>
 
+                <div className="input-box">
+                  <span className="details">Password</span>
+                  <input
+                    type="password"
+                    value={adminPassword}
+                    onChange={(e) => setAdminPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    required
+                  />
+                </div>
+              </div>
 
-        </>
-    )
-}
+              <div className="button">
+                <input type="submit" value="signin" />
+              </div>
+            </form>
 
-export default AdminSignin
+            <button className="btn">
+              <NavLink className="nav-link" to="/signin">
+                Signin As User
+              </NavLink>
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default AdminSignin;

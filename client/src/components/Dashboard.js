@@ -7,38 +7,20 @@ import { AdminContext } from "../App"
 
 const Dashboard = () => {
 
-  const {adminState, dispatchadmin} = useContext(AdminContext)
+  const {adminState} = useContext(AdminContext)
 
   const history = useHistory();
 
-  const callDashboard =  async () =>{
-      try {
-          const res = await apiFetch('/dashboard', {
-            method: "GET",
-            headers: {
-              Accept : "application/json",
-              "Content-Type" : "application/json"
-            },
-            credentials: "include"
-          });
-
-          const data = await res.json();
-
-          if(!res.status === 200){
-            const error = new Error(res.error);
-            throw error;
-          }
-
-      } catch (error) {
-        console.log(error)
-        history.push("/Dashboard");
-      }
-  }
-
+  
+          
 
   useEffect(() => {
-    callDashboard();
-  }, [])
+    if (!adminState){
+      history.push("/adminsignin");
+      return
+    }
+    
+  }, [adminState, history]);
 
 
 

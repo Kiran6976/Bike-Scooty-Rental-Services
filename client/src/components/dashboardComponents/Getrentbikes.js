@@ -6,22 +6,22 @@ import { AdminContext } from "../../App"
 
 const Getrentbikes = () => {
 
-  const {adminState, dispatchadmin} = useContext(AdminContext)
+  const {adminState} = useContext(AdminContext)
 
   const [getBikes, setGetBikes] = useState([]);
 
   const getallrenttbikes = async () =>{
     try {
-        const res = await apiFetch ('/getAvailableRentBikes', {
+        const data = await apiFetch ('/getAvailableRentBikes', {
             method: 'GET',
+            credentials: "include",
         });
 
-        const data = await res.json();
         setGetBikes(data);
 
     }
     catch (error) {
-        console.log(error)
+        console.log("Failed to fetch rent bikes:", error.message);
     }
 }
 
@@ -30,7 +30,7 @@ useEffect(() => {
 }, [])
 const deleteBike = async (bikeId) => {
   try {
-    const res = await apiFetch("/deleteRentBikeFromDashboard", {
+    const data = await apiFetch("/deleteRentBikeFromDashboard", {
       method: "POST",
       credentials: "include",
       headers: {
@@ -41,7 +41,6 @@ const deleteBike = async (bikeId) => {
       }),
     });
 
-    const data = await res.json();
 
     if (data.success) {
       // update UI instantly
@@ -50,7 +49,7 @@ const deleteBike = async (bikeId) => {
       );
     }
   } catch (error) {
-    console.log(error);
+    console.log("Bike deletion error:", error.message);
   }
 };
 
