@@ -1,13 +1,19 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const authenticate = require("../middelware/authenticate");
+// Sign Out route (NO authenticate middleware)
+router.get("/signout", (req, res) => {
+  console.log("User logged out");
 
-// Sign Out implementation
+  res.clearCookie("jwtoken", {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+  });
 
-module.exports = router.get('/signout', authenticate, (req, res)=>{
-    console.log('user log out')
-    
-    res.clearCookie('jwtoken', {path: '/'})
-    res.status(200).send("User Logout")
-})
+  return res.status(200).json({
+    message: "User logged out successfully",
+  });
+});
+
+module.exports = router;

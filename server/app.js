@@ -18,6 +18,8 @@ dotenv.config({ path: './config.env' });
 ====================== */
 require("./database/conn");
 
+
+
 /* ======================
    MIDDLEWARE
 ====================== */
@@ -39,7 +41,7 @@ app.use(require("./router/auth"));
 /* ======================
    STATIC FILES
 ====================== */
-app.use("/uploads", express.static("/uploads"));
+app.use("/uploads", express.static("uploads"));
 
 /* ======================
    PRODUCTION BUILD

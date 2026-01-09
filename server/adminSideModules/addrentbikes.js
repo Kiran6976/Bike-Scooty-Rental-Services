@@ -22,14 +22,16 @@ module.exports = router.post('/addrentbikes', upload.single("myrentfile"),  asyn
                 price : req.body.price,
                 rent : req.body.rent,
                 fileName : req.file.originalname,
-                filePath : req.file.path,
+                filePath : `/uploads/${req.file.filename}`,
                 fileType : req.file.mimetype,
                 fileSize : req.file.size, 
             });
             await data.save();
-            res.status(201).send("Data uploaded successfully")
+            res.status(201).json({success: true, message: "Bike added successfully"});
     } catch (error) {
-        res.status(400).send(error.message);
+        res.status(500).json({success: false, message: error.message});
     }
    
 } )
+
+module.exports = router;

@@ -1,91 +1,78 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 const authenticate = require("../middelware/authenticate");
 
+const User = require("../models/userSchema");
+const Rentbike = require("../models/rentbikeSchema");
+const Rentbikereviews = require("../models/rentbikereviewSchema");
 
-const User = require('../models/userSchema');
-const Rentbike = require('../models/rentbikeSchema');
-const Rentbikereviews = require('../models/rentbikereviewSchema');
+/* ============================
+   GET BIKE + USER DATA
+============================ */
+router.get("/rentbike/:bikeId/reviews/data", authenticate, async (req, res) => {
+  try {
+    const { bikeId } = req.params;
 
-let getReviewRentBikeId;
+    const findBike = await Rentbike.findById(bikeId);
+    const findUser = await User.findById(req.userID);
 
-module.exports =router.post('/sendReviewRentBikeId', authenticate, async (req, res) =>{
-    getReviewRentBikeId = req.body.selectedBikeId
-}),
-
-
-
-module.exports = router.get('/getRentBikeReviews', authenticate, async (req, res) =>{
-    const findUser = await User.findOne({_id: req.userID});
-    const findBike = await Rentbike.findOne({_id: getReviewRentBikeId.id});
-
-    const data = {findBike,findUser}
-    
-    try{
-        
-        res.status(200).send(data);
-
-    }catch(error) {
-        res.status(400).send(error.message);
+    if (!findBike) {
+      return res.status(404).json({ error: "Bike not found" });
     }
 
-    
-}),
+    res.status(200).json({ findBike, findUser });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
+/* ============================
+   GET ALL REVIEWS
+============================ */
+router.get("/rentbike/:bikeId/reviews", authenticate, async (req, res) => {
+  try {
+    const { bikeId } = req.params;
 
-module.exports = router.get('/getallreviewsforselectedrentbike', authenticate, async (req, res) =>{
+    const reviews = await Rentbikereviews.findOne({ bikeById: bikeId });
 
-    const findAllReviews = await Rentbikereviews.findOne({bikeById: getReviewRentBikeId.id});
-    
-    try{
-        
-        res.status(200).send(findAllReviews);
+    res.status(200).json({
+      allReviews: reviews ? reviews.allReviews : [],
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
-    }catch(error) {
-        res.status(400).send(error.message);
+/* ============================
+   POST REVIEW
+============================ */
+router.post("/rentbike/:bikeId/reviews", authenticate, async (req, res) => {
+  try {
+    const { bikeId } = req.params;
+    const { name, email, message } = req.body;
+
+    let reviewDoc = await Rentbikereviews.findOne({ bikeById: bikeId });
+
+    if (!reviewDoc) {
+      reviewDoc = new Rentbikereviews({
+        bikeById: bikeId,
+        allReviews: [],
+      });
     }
-}),
 
+    reviewDoc.allReviews.push({
+      userById: req.userID,
+      name,
+      email,
+      comments: message,
+    });
 
-module.exports = router.post('/postrentbikereviews', authenticate, async (req, res)=>{
+    await reviewDoc.save();
 
-    const {id, name, email, message, selectedBikeId} = req.body;
-    const findBike = await Rentbike.findOne({_id: selectedBikeId.id});
-    const findBikeId = findBike._id;
-    const findBikeReview = await Rentbikereviews.findOne({bikeById: findBikeId})
-   
+    res.status(201).json({ message: "Review submitted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
-    try {
-        
-        if(findBikeReview){
-            const bikeReviewId = findBikeReview.bikeById
-            if(bikeReviewId.equals(findBikeId)){
-                    findBikeReview.allReviews.push({
-                    userById : id, 
-                    name : name, 
-                    email : email, 
-                    comments : message,
-               });
-            }
-            await findBikeReview.save();
-            res.status(201).send({ message: "review submited successfully"});
-        }
-        else{
-            const newReview = new Rentbikereviews({
-                bikeById : findBike,
-                allReviews: [{
-                userById : id, 
-                name : name, 
-                email : email, 
-                comments : message, 
-                }]
-            });
-
-            await newReview.save();
-            res.status(201).json({ message: "review submited successfully"});
-        }
-    }
-    catch(error) {
-        res.status(500).send(error.message);
-    }
-})
+module.exports = router;

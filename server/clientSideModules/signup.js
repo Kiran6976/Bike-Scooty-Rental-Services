@@ -1,34 +1,54 @@
 const express = require('express');
 const router = express.Router();
-
 const User = require('../models/userSchema');
+const sendEmailOTP = require('../utils/sendEmail');
 
-//User Regestration 
-module.exports = router.post('/signup', async (req, res) =>{
-    const {name, phone, email, password, cPassword} = req.body;
-    
-    if(!name || !phone || !email || !password || !cPassword){
-        return res.status(422).json({ error: "Please filled the form properly"})
+router.post('/signup', async (req, res) => {
+    const { name, phone, email, password, cPassword } = req.body;
+
+    if (!name || !phone || !email || !password || !cPassword) {
+        return res.status(422).json({ error: "All fields are required" });
     }
 
-    try {
-            const userExist = await User.findOne({ email: email});
-            
-            if(userExist){
-                return res.status(422).json({error: "Please filled the form properly"})
-            }
-            else if(password != cPassword){
-                return res.status(422).json({error: "Passowrds are not matching"})
-            }
-            else{
-                const user = new User ({name, phone, email, password, cPassword});
-    
-                await user.save();
-
-                res.status(201).json({ message: "user registered successfully"});
-            }
-    
-        } catch (error) {
-            console.log(error);
+    if (password !== cPassword) {
+        return res.status(422).json({ error: "Passwords do not match" });
     }
+
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser && existingUser.isVerified) {
+        return res.status(409).json({ error: "Email already registered" });
+    }
+
+    // Generate OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    let user;
+
+    if (existingUser && !existingUser.isVerified) {
+        // Update OTP if user exists but not verified
+        existingUser.emailOTP = otp;
+        existingUser.otpExpiry = Date.now() + 5 * 60 * 1000;
+        await existingUser.save();
+        user = existingUser;
+    } else {
+        user = new User({
+            name,
+            phone,
+            email,
+            password,
+            cPassword,
+            emailOTP: otp,
+            otpExpiry: Date.now() + 5 * 60 * 1000
+        });
+        await user.save();
+    }
+
+    await sendEmailOTP(email, otp);
+
+    res.status(201).json({
+        message: "OTP sent to email. Please verify."
+    });
 });
+
+module.exports = router;

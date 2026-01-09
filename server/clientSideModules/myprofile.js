@@ -18,7 +18,7 @@ router.get("/myprofile", authenticate, async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: "Failed to fetch profile data" });
+    res.status(500).json({ error: "Failed to apiFetch profile data" });
   }
 });
 

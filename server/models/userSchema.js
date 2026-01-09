@@ -27,6 +27,16 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: Date.now
     },
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
+    emailOTP: {
+        type: String
+    },
+    otpExpiry: {
+        type: Date
+    },
     messages:[
         {
             name: {

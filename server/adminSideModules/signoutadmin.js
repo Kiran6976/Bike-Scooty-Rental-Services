@@ -1,10 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const adminAuthentication = require("../middelware/adminAuthentication");
 
+// ❌ DO NOT use adminAuthentication here
+// Logout should always work even if token is expired
 
-module.exports = router.get('/adminsignout', (req, res)=>{
-    console.log('user log out')
-    res.clearCookie('jwtAdmin', {path: '/'})
-    res.status(200).send("Admin Logout")
-})
+router.get('/adminsignout', (req, res) => {
+  console.log('Admin logged out');
+
+  res.clearCookie('jwtAdmin', { path: '/' });
+
+  res.status(200).json({
+    message: "Admin logged out successfully"
+  });
+});
+
+module.exports = router;

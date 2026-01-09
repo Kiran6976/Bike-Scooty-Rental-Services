@@ -1,10 +1,12 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 const adminAuthentication = require("../middelware/adminAuthentication");
 
+router.get("/getadmindata", adminAuthentication, (req, res) => {
+  res.status(200).json({
+    admin: req.rootAdmin,
+    success: true,
+  });
+});
 
-//dashboard authentication
-module.exports = router.get('/dashboard', (req, res) =>{
-
-    res.send(req.rootAdmin);
-})
+module.exports = router;

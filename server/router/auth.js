@@ -31,6 +31,10 @@ router.use(require('../clientSideModules/changepassword'));
 router.use(require("../clientSideModules/deleteRentCartItem"));
 router.use(require('../clientSideModules/razorpayOrder'));
 router.use(require('../clientSideModules/verifyRazorpay'));
+router.use(require('../clientSideModules/verifyEmailOtp'));
+router.use(require("../clientSideModules/paymentHistory"));
+
+
 
 
 
@@ -52,5 +56,8 @@ router.use(require("../adminSideModules/deleterentbikes"));
 // Admin Side Modules---for--- Users
 router.use(require('../adminSideModules/deleteuser'))
 router.use(require('../adminSideModules/getallusers'))
+
+router.use(require("../adminSideModules/refundPayment"));
+
 
 module.exports = router;
